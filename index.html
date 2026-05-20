@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenCode — Complete Setup Guide</title>
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --bg-card: #121214;
+    --bg-elevated: #1a1a1e;
+    --bg-hover: #222228;
+    --border: #2a2a30;
+    --text: #e8e8ed;
+    --text-secondary: #9e9ea8;
+    --text-muted: #6a6a76;
+    --accent: #6c5ce7;
+    --accent-dim: #4a3db8;
+    --accent-glow: rgba(108, 92, 231, 0.15);
+    --green: #2ed573;
+    --green-bg: rgba(46, 213, 115, 0.1);
+    --orange: #ffa502;
+    --orange-bg: rgba(255, 165, 2, 0.1);
+    --red: #ff4757;
+    --red-bg: rgba(255, 71, 87, 0.1);
+    --blue: #45aaf2;
+    --blue-bg: rgba(69, 170, 242, 0.1);
+    --radius: 10px;
+    --radius-sm: 6px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ─── Header ─── */
+  header {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10, 10, 11, 0.85);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  header .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700; font-size: 17px; letter-spacing: -0.3px;
+  }
+  header .logo svg { width: 28px; height: 28px; flex-shrink: 0; }
+  header .logo span { color: var(--text-secondary); font-weight: 500; }
+  header .badge {
+    margin-left: auto;
+    font-size: 12px; font-weight: 500;
+    background: var(--accent-glow); color: var(--accent);
+    padding: 4px 12px; border-radius: 100px;
+    border: 1px solid var(--accent);
+    letter-spacing: 0.3px;
+  }
+
+  /* ─── Layout ─── */
+  .wrapper { display: flex; margin-top: 64px; min-height: calc(100vh - 64px); }
+
+  /* ─── Sidebar ─── */
+  nav.sidebar {
+    position: fixed; top: 64px; left: 0; bottom: 0;
+    width: 260px;
+    overflow-y: auto;
+    padding: 24px 16px 32px;
+    border-right: 1px solid var(--border);
+    background: var(--bg);
+  }
+  nav.sidebar::-webkit-scrollbar { width: 4px; }
+  nav.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  nav.sidebar .toc-title {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--text-muted);
+    margin-bottom: 16px; padding-left: 8px;
+  }
+  nav.sidebar a {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 13px; line-height: 1.4;
+    padding: 5px 8px;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s, color 0.15s;
+  }
+  nav.sidebar a:hover {
+    background: var(--bg-hover);
+    color: var(--text);
+    text-decoration: none;
+  }
+  nav.sidebar a.sub { padding-left: 24px; font-size: 12px; }
+  nav.sidebar a.active { color: var(--accent); background: var(--accent-glow); }
+
+  /* ─── Main ─── */
+  main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 48px 56px 80px;
+    max-width: 920px;
+  }
+  @media (max-width: 900px) {
+    nav.sidebar { display: none; }
+    main { margin-left: 0; padding: 32px 20px 64px; }
+  }
+
+  /* ─── Hero ─── */
+  .hero { margin-bottom: 48px; }
+  .hero h1 {
+    font-size: 36px; font-weight: 800;
+    letter-spacing: -0.8px;
+    margin-bottom: 8px;
+  }
+  .hero .subtitle {
+    font-size: 16px; color: var(--text-secondary);
+    margin-bottom: 16px;
+    max-width: 600px;
+  }
+  .hero .meta {
+    display: flex; flex-wrap: wrap; gap: 10px;
+  }
+  .meta-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 500;
+    padding: 4px 12px; border-radius: 100px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+  .meta-tag.win { border-color: var(--blue); color: var(--blue); background: var(--blue-bg); }
+  .meta-tag.mac { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+  .meta-tag.both { border-color: var(--green); color: var(--green); background: var(--green-bg); }
+
+  /* ─── Sections ─── */
+  section { margin-bottom: 48px; }
+  section h2 {
+    font-size: 24px; font-weight: 700;
+    letter-spacing: -0.4px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  section h2 .section-num {
+    font-size: 13px; font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-glow);
+    padding: 2px 10px; border-radius: 100px;
+  }
+  section h3 {
+    font-size: 18px; font-weight: 600;
+    margin-top: 28px; margin-bottom: 12px;
+    color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+  section h4 {
+    font-size: 15px; font-weight: 600;
+    margin-top: 20px; margin-bottom: 8px;
+    color: var(--text-secondary);
+  }
+  section p, section li { color: var(--text-secondary); }
+  section p { margin-bottom: 12px; }
+  section ul, section ol { margin-bottom: 12px; padding-left: 20px; }
+  section li { margin-bottom: 4px; }
+  section strong { color: var(--text); }
+
+  /* ─── Platform badge inline ─── */
+  .os-badge {
+    display: inline-block;
+    font-size: 11px; font-weight: 600;
+    padding: 1px 10px; border-radius: 100px;
+    letter-spacing: 0.3px;
+    margin-right: 6px;
+  }
+  .os-badge.win { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue); }
+  .os-badge.mac { background: var(--accent-glow); color: var(--accent); border: 1px solid var(--accent); }
+  .os-badge.both { background: var(--green-bg); color: var(--green); border: 1px solid var(--green); }
+
+  /* ─── Callouts ─── */
+  .callout {
+    padding: 14px 18px;
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    font-size: 14px;
+    border-left: 3px solid;
+  }
+  .callout.info { background: var(--blue-bg); border-color: var(--blue); color: var(--blue); }
+  .callout.warning { background: var(--orange-bg); border-color: var(--orange); color: var(--orange); }
+  .callout.danger { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+  .callout.success { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+  .callout strong { color: inherit; }
+  .callout code { background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+
+  /* ─── Bug box ─── */
+  .bug-box {
+    background: var(--red-bg);
+    border: 1px solid rgba(255,71,87,0.25);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .bug-box .bug-title {
+    font-weight: 700; font-size: 14px; color: var(--red);
+    margin-bottom: 6px;
+  }
+  .bug-box .bug-title::before { content: "\26A0\FE0F "; }
+  .bug-box p, .bug-box li { color: var(--text-secondary); font-size: 14px; }
+  .fix-box {
+    background: var(--green-bg);
+    border: 1px solid rgba(46,213,115,0.25);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .fix-box .fix-title {
+    font-weight: 700; font-size: 14px; color: var(--green);
+    margin-bottom: 6px;
+  }
+  .fix-box .fix-title::before { content: "\2714\FE0F "; }
+
+  /* ─── Code blocks ─── */
+  pre {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    overflow-x: auto;
+    margin-bottom: 16px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  pre .comment { color: var(--text-muted); }
+  pre .keyword { color: var(--accent); }
+  pre .string { color: var(--green); }
+  code {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--bg-elevated);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--accent);
+  }
+  pre code { background: none; padding: 0; color: inherit; }
+
+  /* ─── Tables ─── */
+  .table-wrap { overflow-x: auto; margin-bottom: 16px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  thead { background: var(--bg-elevated); }
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  td:first-child { font-weight: 500; color: var(--text); }
+  td code { font-size: 12px; }
+
+  /* ─── Steps ─── */
+  .steps { counter-reset: step; list-style: none; padding: 0; }
+  .steps li {
+    counter-increment: step;
+    padding: 12px 16px 12px 48px;
+    position: relative;
+    margin-bottom: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+  }
+  .steps li::before {
+    content: counter(step);
+    position: absolute; left: 14px; top: 12px;
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--accent); color: #fff;
+    font-size: 12px; font-weight: 700;
+    border-radius: 100px;
+  }
+  .steps li strong { color: var(--text); }
+
+  /* ─── Command grid ─── */
+  .cmd-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .cmd-grid .cmd { padding: 10px 14px; font-family: var(--font-mono); font-size: 13px; background: var(--bg-elevated); border-bottom: 1px solid var(--border); white-space: nowrap; color: var(--accent); }
+  .cmd-grid .desc { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-secondary); }
+  .cmd-grid .cmd:last-child, .cmd-grid .desc:last-child { border-bottom: none; }
+  .cmd-grid .cmd:nth-child(4n+1), .cmd-grid .cmd:nth-child(4n+2) { background: rgba(255,255,255,0.015); }
+
+  /* ─── Free model cards ─── */
+  .model-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .model-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .model-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .model-card .m-name { font-weight: 700; font-size: 15px; margin-bottom: 2px; }
+  .model-card .m-id { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+  .model-card .m-stats { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12px; }
+  .model-card .m-stat { background: var(--bg-elevated); padding: 2px 8px; border-radius: 4px; color: var(--text-secondary); }
+  .model-card .m-cost { background: var(--green-bg); color: var(--green); font-weight: 600; }
+
+  /* ─── Resources ─── */
+  .resources {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-top: 24px;
+  }
+  .resources a {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    font-size: 13px;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .resources a:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+
+  /* ─── Footer ─── */
+  footer {
+    text-align: center;
+    padding: 32px 0 16px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── Header ─── -->
+<header>
+  <div class="logo">
+    <svg viewBox="0 0 84 30" fill="none">
+      <path d="M24 24H6V18H18V12H24V24ZM6 18H0V12H6V18Z" fill="#6c5ce7"/>
+      <path d="M6 24H24V30H0V18H6V24ZM18 18H6V12H18V18ZM24 12H18V6H0V0H24V12Z" fill="#e8e8ed"/>
+      <path d="M54 18V24H36V18H54Z" fill="#6c5ce7"/>
+      <path d="M54 18H36V24H54V30H30V0H54V18ZM36 12H48V6H36V12Z" fill="#e8e8ed"/>
+      <path d="M78 30H66V12H78V30Z" fill="#6c5ce7"/>
+      <path d="M78 6H66V30H60V0H78V6ZM84 30H78V6H84V30Z" fill="#e8e8ed"/>
+    </svg>
+    OpenCode <span>Setup Guide</span>
+  </div>
+  <div class="badge">v1.15</div>
+</header>
+
+<!-- ─── Wrapper ─── -->
+<div class="wrapper">
+
+<!-- ─── Sidebar ─── -->
+<nav class="sidebar" id="sidebar">
+  <div class="toc-title">Contents</div>
+  <a href="#what-is-opencode">1. What is OpenCode?</a>
+  <a href="#installation" class="sub">2. Installation</a>
+  <a href="#windows" class="sub" style="padding-left:32px">Windows</a>
+  <a href="#macos" class="sub" style="padding-left:32px">macOS</a>
+  <a href="#config">3. First Launch &amp; Config</a>
+  <a href="#bug-client-cli">4. Known Bug: <code>"client":"cli"</code></a>
+  <a href="#plugin-error">5. Plugin Install Error</a>
+  <a href="#free-api">6. Free API Options</a>
+  <a href="#zen-endpoints" class="sub">Zen API Endpoints</a>
+  <a href="#ollama" class="sub">Ollama (Fully Free)</a>
+  <a href="#zen-models">7. Free Models: OpenCode Zen</a>
+  <a href="#paid-models">8. Paid Models (BYOK)</a>
+  <a href="#cli-mode">9. Using CLI Mode</a>
+  <a href="#desktop-mode">10. Using Desktop App Mode</a>
+  <a href="#troubleshooting">11. Troubleshooting</a>
+  <a href="#quickref">12. Quick Reference</a>
+</nav>
+
+<!-- ─── Main ─── -->
+<main>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>OpenCode &mdash; Complete Setup Guide</h1>
+  <p class="subtitle">Install, configure, and use OpenCode &mdash; the open-source AI coding agent. Covers CLI and Desktop app modes, free models, paid API keys, and real-world fixes.</p>
+  <div class="meta">
+    <span class="meta-tag win">&#x1F3E0; Windows</span>
+    <span class="meta-tag mac">&#x1F5A5; macOS</span>
+    <span class="meta-tag">Updated 2026-05-20</span>
+  </div>
+</div>
+
+<!-- ──────── 1 ──────── -->
+<section id="what-is-opencode">
+  <h2><span class="section-num">1</span> What is OpenCode?</h2>
+  <p>OpenCode is an <strong>open-source AI coding agent</strong> that works in your terminal, desktop app, or IDE (VS Code, Cursor, Zed). It supports <strong>75+ LLM providers</strong>, has built-in LSP support, and runs any model &mdash; from free hosted models to paid API keys like Claude or GPT.</p>
+  <h3>Key Features</h3>
+  <ul>
+    <li><strong>Provider-agnostic</strong> &mdash; use any model from any provider</li>
+    <li><strong>Free Zen models</strong> included (no API key needed beyond a free Zen account)</li>
+    <li><strong>LSP enabled</strong> &mdash; auto-loads language servers for better context</li>
+    <li><strong>Multi-session</strong> &mdash; run multiple agents in parallel</li>
+    <li><strong>CLI + Desktop + IDE</strong> &mdash; three interfaces, one config</li>
+  </ul>
+</section>
+
+<!-- ──────── 2 ──────── -->
+<section id="installation">
+  <h2><span class="section-num">2</span> Installation</h2>
+  <p>OpenCode has two components you can install independently:</p>
+  <ul>
+    <li><strong>CLI / Terminal</strong> &mdash; runs in the command line (TUI or non-interactive mode)</li>
+    <li><strong>Desktop App (Beta)</strong> &mdash; GUI app that runs a CLI sidecar in the background</li>
+  </ul>
+
+  <h3 id="windows"><span class="os-badge win">Windows</span> Installation</h3>
+
+  <h4>Option A: Desktop App <span style="font-weight:400;color:var(--text-muted)">(Recommended for GUI users)</span></h4>
+  <ol>
+    <li>Download the Windows installer from <a href="https://opencode.ai/download" target="_blank">opencode.ai/download</a></li>
+    <li>Run the <code>.exe</code> installer and follow the wizard</li>
+    <li>Launch OpenCode from the Start Menu</li>
+  </ol>
+  <div class="callout warning">Microsoft Edge WebView2 Runtime is required. If you see a blank window, install it from <a href="https://developer.microsoft.com/en-us/microsoft-edge/webview2/" target="_blank" style="color:var(--orange)">Microsoft's website</a>.</div>
+
+  <h4>Option B: CLI via npm</h4>
+  <pre><span class="keyword">npm</span> install -g opencode-ai</pre>
+  <div class="callout warning">On Windows, npm may show <code>EPERM</code> errors about symlinks. Run the terminal <strong>as Administrator</strong> or enable Developer Mode in Windows Settings.</div>
+
+  <h4>Option C: CLI via package managers</h4>
+  <pre><span class="comment"># Chocolatey</span>
+choco install opencode
+
+<span class="comment"># Scoop</span>
+scoop bucket add extras
+scoop install extras/opencode
+
+<span class="comment"># WinGet</span>
+winget install -e --id SST.opencode</pre>
+
+  <h4>Option D: CLI via install script <span style="font-weight:400;color:var(--text-muted)">(requires WSL/bash)</span></h4>
+  <pre>curl -fsSL https://opencode.ai/install | bash</pre>
+
+  <h3 id="macos"><span class="os-badge mac">macOS</span> Installation</h3>
+
+  <h4>Option A: Desktop App <span style="font-weight:400;color:var(--text-muted)">(Recommended for GUI users)</span></h4>
+  <ol>
+    <li>Download the <code>.dmg</code> from <a href="https://opencode.ai/download" target="_blank">opencode.ai/download</a> (choose Apple Silicon or Intel)</li>
+    <li>Open the DMG and drag OpenCode to Applications</li>
+    <li>Launch from Applications folder</li>
+  </ol>
+  <div class="callout warning">macOS may block the app. Go to <strong>System Settings &rarr; Privacy &amp; Security</strong> and click "Open Anyway."</div>
+
+  <h4>Option B: CLI via Homebrew <span style="font-weight:400;color:var(--text-muted)">(Recommended)</span></h4>
+  <pre>brew install anomalyco/tap/opencode</pre>
+
+  <h4>Option C: CLI via npm</h4>
+  <pre><span class="keyword">npm</span> install -g opencode-ai</pre>
+
+  <h4>Option D: CLI via install script</h4>
+  <pre>curl -fsSL https://opencode.ai/install | bash</pre>
+</section>
+
+<!-- ──────── 3 ──────── -->
+<section id="config">
+  <h2><span class="section-num">3</span> First Launch &amp; Configuration</h2>
+
+  <h3>Config File Location</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Platform</th><th>Path</th></tr></thead>
+    <tbody>
+      <tr><td><span class="os-badge win">Win</span> Windows</td><td><code>%USERPROFILE%\.config\opencode\opencode.jsonc</code></td></tr>
+      <tr><td><span class="os-badge mac">Mac</span> macOS</td><td><code>~/.config/opencode/opencode.jsonc</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Press <kbd>WIN+R</kbd> and paste <code>%USERPROFILE%\.config\opencode</code> to find it on Windows.</p>
+
+  <h3>Minimal Starting Config</h3>
+  <pre>{
+  <span class="string">"$schema"</span>: <span class="string">"https://opencode.ai/config.json"</span>
+}</pre>
+  <p>This is enough to start. Providers and models are configured interactively inside the app (see sections below).</p>
+</section>
+
+<!-- ──────── 4 ──────── -->
+<section id="bug-client-cli">
+  <h2><span class="section-num">4</span> Known Bug: <code>"client": "cli"</code> breaks the Desktop App</h2>
+  <p><span class="os-badge win">Windows</span> <span class="os-badge mac">macOS</span> <span style="color:var(--text-muted);font-size:13px">Windows confirmed, likely affects macOS too</span></p>
+
+  <div class="bug-box">
+    <div class="bug-title">The Problem</div>
+    <p>If your config file contains <code>"client": "cli"</code>, the <strong>Desktop app will fail</strong> with:</p>
+    <p style="text-align:center;padding:8px 0;font-weight:700;color:var(--red)">"Choose an agent and model before sending a prompt."</p>
+    <p>Even though the <strong>CLI works perfectly fine</strong> with the same config. This happens because:</p>
+    <ol>
+      <li>The config file is <strong>shared</strong> between CLI and Desktop modes</li>
+      <li>Setting <code>"client": "cli"</code> forces the Desktop app's sidecar into CLI-only mode</li>
+      <li>The Desktop UI can't communicate properly with the sidecar to read your configured providers/models</li>
+    </ol>
+  </div>
+
+  <div class="fix-box">
+    <div class="fix-title">The Fix</div>
+
+    <p><strong>Step 1:</strong> Remove the <code>"client": "cli"</code> line from your config.</p>
+
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:4px">Before &mdash; broken:</p>
+    <pre>{
+  <span class="string">"$schema"</span>: <span class="string">"https://opencode.ai/config.json"</span>,
+  <span class="string" style="color:var(--red)">"client"</span>: <span class="string" style="color:var(--red)">"cli"</span>     <span class="comment">// &lt;-- remove this</span>
+}</pre>
+
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:4px">After &mdash; fixed:</p>
+    <pre>{
+  <span class="string">"$schema"</span>: <span class="string">"https://opencode.ai/config.json"</span>
+}</pre>
+
+    <p><strong>Step 2:</strong> Clear the OpenCode cache.</p>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Platform</th><th>Command</th></tr></thead>
+      <tbody>
+        <tr><td><span class="os-badge win">Win</span></td><td>Delete <code>%USERPROFILE%\.cache\opencode</code></td></tr>
+        <tr><td><span class="os-badge mac">Mac</span></td><td><code>rm -rf ~/.cache/opencode</code></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p><strong>Step 3:</strong> Reset the Desktop app's saved storage.</p>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Platform</th><th>Path to delete</th></tr></thead>
+      <tbody>
+        <tr><td><span class="os-badge win">Win</span></td><td>Delete everything inside <code>%APPDATA%\ai.opencode.desktop\</code> except the <code>opencode\</code> subfolder</td></tr>
+        <tr><td><span class="os-badge mac">Mac</span></td><td>Delete <code>~/Library/Application Support/ai.opencode.desktop/opencode.global.dat</code> and <code>opencode.settings</code></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p><strong>Step 4:</strong> Restart the Desktop app. Run <code>/connect</code> again to add your provider, and <code>/models</code> to select a model.</p>
+  </div>
+</section>
+
+<!-- ──────── 5 ──────── -->
+<section id="plugin-error">
+  <h2><span class="section-num">5</span> Plugin Install Error <span style="font-weight:400;color:var(--text-muted);font-size:15px">(Harmless)</span></h2>
+  <p><span class="os-badge both">Both</span></p>
+
+  <div class="bug-box">
+    <div class="bug-title">The Problem</div>
+    <p>In the logs, you may see this warning:</p>
+    <pre>WARN background dependency install failed
+Cause: NpmInstallFailedError
+cause: @opencode-ai/plugin: No matching version found for @opencode-ai/plugin@local.</pre>
+    <p>This happens when OpenCode tries to auto-install plugins and encounters a reference to a non-existent local plugin. It's <strong>harmless</strong> &mdash; OpenCode continues to work normally.</p>
+  </div>
+
+  <div class="fix-box">
+    <div class="fix-title">The Fix (Optional)</div>
+    <p>If the warning bothers you, check your config for a <code>plugin</code> key and remove any entries referencing <code>@opencode-ai/plugin</code> or <code>local</code> plugins.</p>
+  </div>
+</section>
+
+<!-- ──────── 6 ──────── -->
+<section id="free-api">
+  <h2><span class="section-num">6</span> OpenCode Free API Options</h2>
+  <p>OpenCode offers several ways to use models for free.</p>
+
+  <h3 id="zen-endpoints">OpenCode Zen API Endpoints</h3>
+  <p>Zen provides <strong>REST API endpoints</strong> you can call directly (not just through the OpenCode app). All endpoints use the same Zen API key.</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Model</th><th>Model ID</th><th>API Base URL</th><th>Auth</th></tr></thead>
+    <tbody>
+      <tr><td>Big Pickle</td><td><code>big-pickle</code></td><td><code>https://opencode.ai/zen/v1/chat/completions</code></td><td><code>x-api-key</code> header</td></tr>
+      <tr><td>DeepSeek V4 Flash Free</td><td><code>deepseek-v4-flash-free</code></td><td><code>https://opencode.ai/zen/v1/chat/completions</code></td><td><code>x-api-key</code> header</td></tr>
+      <tr><td>MiniMax M2.5 Free</td><td><code>minimax-m2.5-free</code></td><td><code>https://opencode.ai/zen/v1/chat/completions</code></td><td><code>x-api-key</code> header</td></tr>
+      <tr><td>Nemotron 3 Super Free</td><td><code>nemotron-3-super-free</code></td><td><code>https://opencode.ai/zen/v1/chat/completions</code></td><td><code>x-api-key</code> header</td></tr>
+      <tr><td>All GPT models</td><td><code>gpt-5.*</code></td><td><code>https://opencode.ai/zen/v1/responses</code></td><td><code>x-api-key</code> header</td></tr>
+      <tr><td>All Claude models</td><td><code>claude-*</code></td><td><code>https://opencode.ai/zen/v1/messages</code></td><td><code>x-api-key</code> header</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>List all available models: <code>GET https://opencode.ai/zen/v1/models</code></p>
+
+  <div class="callout warning">Even free models require a Zen account with a payment method on file. Usage is billed at $0 for free models, but billing info is required.</div>
+
+  <h3 id="ollama">Local Models via Ollama <span style="font-weight:400;color:var(--text-muted)">(Fully Free)</span></h3>
+  <p>For a <strong>truly free, no-account, offline</strong> option, run local models via <a href="https://ollama.com" target="_blank">Ollama</a>:</p>
+  <pre><span class="comment"># Install Ollama, then pull a model</span>
+ollama pull qwen2.5-coder:7b
+
+<span class="comment"># Connect in OpenCode</span>
+<span class="comment"># Run /connect in the TUI and select Ollama as the provider</span></pre>
+  <p>This requires a machine with sufficient RAM/VRAM but has no API costs and works fully offline.</p>
+</section>
+
+<!-- ──────── 7 ──────── -->
+<section id="zen-models">
+  <h2><span class="section-num">7</span> Free Models: OpenCode Zen</h2>
+
+  <h3>How to Connect Zen</h3>
+  <ol class="steps">
+    <li>Go to <strong><a href="https://opencode.ai/auth" target="_blank">opencode.ai/auth</a></strong> and sign in / create an account</li>
+    <li>Add billing details <span style="color:var(--text-muted)">(required even for free models &mdash; but free models cost <strong>$0</strong>)</span></li>
+    <li>Copy your Zen API key</li>
+    <li>In OpenCode, run the command: <strong><code>/connect</code></strong></li>
+    <li>Select <strong>OpenCode Zen</strong> from the provider list</li>
+    <li>Paste your API key</li>
+    <li>Run <strong><code>/models</code></strong> to see available models</li>
+    <li>Select a free model <span style="color:var(--text-muted)">(look for "Free" in the name)</span></li>
+  </ol>
+
+  <h3>Available Free Models</h3>
+  <div class="model-cards">
+    <div class="model-card">
+      <div class="m-name">Big Pickle</div>
+      <div class="m-id">big-pickle</div>
+      <div class="m-stats">
+        <span class="m-stat">SWE-bench: 72.0%</span>
+        <span class="m-stat">200K ctx</span>
+        <span class="m-stat m-cost">Free</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:6px">General coding, stealth model</div>
+    </div>
+    <div class="model-card">
+      <div class="m-name">DeepSeek V4 Flash Free</div>
+      <div class="m-id">deepseek-v4-flash-free</div>
+      <div class="m-stats">
+        <span class="m-stat">128K ctx</span>
+        <span class="m-stat m-cost">Free</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:6px">Fast general coding</div>
+    </div>
+    <div class="model-card">
+      <div class="m-name">MiniMax M2.5 Free</div>
+      <div class="m-id">minimax-m2.5-free</div>
+      <div class="m-stats">
+        <span class="m-stat">SWE-bench: 80.2%</span>
+        <span class="m-stat">200K ctx</span>
+        <span class="m-stat m-cost">Free</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:6px">Strong coding, long context</div>
+    </div>
+    <div class="model-card">
+      <div class="m-name">Nemotron 3 Super Free</div>
+      <div class="m-id">nemotron-3-super-free</div>
+      <div class="m-stats">
+        <span class="m-stat">SWE-bench: 52.0%</span>
+        <span class="m-stat">1M ctx</span>
+        <span class="m-stat m-cost">Free</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:6px">NVIDIA, massive context window</div>
+    </div>
+  </div>
+
+  <h3>Set a Free Model as Default</h3>
+  <p>Add this to your config to skip the model selection step on startup:</p>
+  <pre>{
+  <span class="string">"$schema"</span>: <span class="string">"https://opencode.ai/config.json"</span>,
+  <span class="string">"model"</span>: <span class="string">"opencode/big-pickle"</span>
+}</pre>
+  <div class="callout info">The format is always <code>opencode/&lt;model-id&gt;</code>. Example: <code>opencode/minimax-m2.5-free</code>.</div>
+</section>
+
+<!-- ──────── 8 ──────── -->
+<section id="paid-models">
+  <h2><span class="section-num">8</span> Paid Models <span style="font-weight:400;color:var(--text-muted);font-size:15px">(Bring Your Own API Key)</span></h2>
+  <p>If you have existing API keys for paid providers, you can use them in OpenCode.</p>
+
+  <h3>Using <code>/connect</code> <span style="font-weight:400;color:var(--text-muted)">(Recommended)</span></h3>
+  <p>Just run <code>/connect</code> in the TUI, select your provider, and paste your API key.</p>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Provider</th><th>Command</th><th>Environment Variable</th></tr></thead>
+    <tbody>
+      <tr><td>Anthropic (Claude)</td><td><code>/connect</code> &rarr; Anthropic</td><td><code>ANTHROPIC_API_KEY</code></td></tr>
+      <tr><td>OpenAI (GPT)</td><td><code>/connect</code> &rarr; OpenAI</td><td><code>OPENAI_API_KEY</code></td></tr>
+      <tr><td>Google Gemini</td><td><code>/connect</code> &rarr; Google</td><td><code>GOOGLE_API_KEY</code></td></tr>
+      <tr><td>OpenRouter</td><td><code>/connect</code> &rarr; OpenRouter</td><td><code>OPENROUTER_API_KEY</code></td></tr>
+      <tr><td>Azure OpenAI</td><td><code>/connect</code> &rarr; Azure</td><td><code>AZURE_API_KEY</code></td></tr>
+      <tr><td>Together AI</td><td><code>/connect</code> &rarr; Together</td><td><code>TOGETHER_API_KEY</code></td></tr>
+      <tr><td>Groq</td><td><code>/connect</code> &rarr; Groq</td><td><code>GROQ_API_KEY</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Using Environment Variables</h3>
+  <p>Set the env var in your shell profile or system settings:</p>
+  <pre><span class="keyword">export</span> <span class="string">ANTHROPIC_API_KEY</span>="sk-ant-..."</pre>
+  <p>Then start OpenCode &mdash; it will auto-detect the credentials.</p>
+
+  <h3>Using Config File</h3>
+  <pre>{
+  <span class="string">"$schema"</span>: <span class="string">"https://opencode.ai/config.json"</span>,
+  <span class="string">"provider"</span>: {
+    <span class="string">"anthropic"</span>: {
+      <span class="string">"apiKey"</span>: <span class="string">"sk-ant-..."</span>
+    }
+  },
+  <span class="string">"model"</span>: <span class="string">"anthropic/claude-sonnet-4-6"</span>
+}</pre>
+  <div class="callout danger">Never commit API keys to Git. Use environment variables instead of hardcoding them in config.</div>
+</section>
+
+<!-- ──────── 9 ──────── -->
+<section id="cli-mode">
+  <h2><span class="section-num">9</span> Using CLI Mode</h2>
+  <p>The CLI mode runs OpenCode in your command prompt / terminal.</p>
+
+  <h3>Interactive TUI Mode</h3>
+  <pre><span class="comment"># Start in current directory</span>
+opencode
+
+<span class="comment"># Start with a specific model</span>
+opencode --model opencode/big-pickle
+
+<span class="comment"># Start with a specific agent</span>
+opencode --agent plan
+
+<span class="comment"># Continue last session</span>
+opencode --continue</pre>
+
+  <h3>Non-Interactive (Scripting) Mode</h3>
+  <pre><span class="comment"># Run a single prompt</span>
+opencode run <span class="string">"Explain this codebase"</span>
+
+<span class="comment"># Run with a model</span>
+opencode run --model opencode/big-pickle <span class="string">"Add error handling"</span>
+
+<span class="comment"># Pipe input</span>
+<span class="keyword">echo</span> <span class="string">"Find all unused variables"</span> | opencode run</pre>
+
+  <h3>Useful CLI Flags</h3>
+  <div class="cmd-grid">
+    <span class="cmd">--model</span><span class="desc">Specify the model to use</span>
+    <span class="cmd">--agent</span><span class="desc">Specify the agent (build, plan, explore)</span>
+    <span class="cmd">--continue / -c</span><span class="desc">Continue the last session</span>
+    <span class="cmd">--session / -s</span><span class="desc">Continue a specific session by ID</span>
+    <span class="cmd">--dir</span><span class="desc">Start in a specific directory</span>
+    <span class="cmd">--log-level DEBUG</span><span class="desc">Show detailed debug logs</span>
+    <span class="cmd">--print-logs</span><span class="desc">Print logs to stdout</span>
+  </div>
+</section>
+
+<!-- ──────── 10 ──────── -->
+<section id="desktop-mode">
+  <h2><span class="section-num">10</span> Using Desktop App Mode</h2>
+
+  <h3>How it Works</h3>
+  <p>The Desktop app runs a <strong>CLI sidecar</strong> (<code>opencode-cli serve</code>) in the background and connects to it from a GUI. This means:</p>
+  <ul>
+    <li>Config is shared between CLI and Desktop (same <code>opencode.jsonc</code>)</li>
+    <li>Providers/models set in CLI are available in Desktop and vice versa</li>
+    <li>The Desktop app auto-starts the sidecar when launched</li>
+  </ul>
+
+  <h3>Common Desktop Issues</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Issue</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>App shows "Connection Failed"</td><td>Click the server name on home screen &rarr; <strong>Clear</strong> default server URL</td></tr>
+      <tr><td>Blank / frozen window <span class="os-badge mac">Mac</span></td><td><code>OpenCode</code> menu &rarr; <strong>Reload Webview</strong></td></tr>
+      <tr><td>Blank window <span class="os-badge win">Win</span></td><td>Install/update <strong>Microsoft Edge WebView2 Runtime</strong></td></tr>
+      <tr><td>"Choose an agent and model"</td><td>Remove <code>"client": "cli"</code> from config <span style="color:var(--text-muted)">(see <a href="#bug-client-cli">Section 4</a>)</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ──────── 11 ──────── -->
+<section id="troubleshooting">
+  <h2><span class="section-num">11</span> Troubleshooting</h2>
+
+  <h3><span class="os-badge win">Windows</span></h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Problem</th><th>Solution</th></tr></thead>
+    <tbody>
+      <tr><td>Blank window on launch</td><td>Install <a href="https://developer.microsoft.com/en-us/microsoft-edge/webview2/" target="_blank">Microsoft Edge WebView2 Runtime</a></td></tr>
+      <tr><td>"Choose an agent and model" (CLI works)</td><td>Remove <code>"client": "cli"</code>, clear cache &amp; desktop storage <span style="color:var(--text-muted)">(<a href="#bug-client-cli">Section 4</a>)</span></td></tr>
+      <tr><td><code>npm install</code> <code>EPERM</code> error</td><td>Run terminal <strong>as Administrator</strong> or enable Developer Mode</td></tr>
+      <tr><td>Desktop app runs slowly</td><td>Use WSL2 &mdash; <a href="https://opencode.ai/docs/windows-wsl" target="_blank">opencode.ai/docs/windows-wsl</a></td></tr>
+      <tr><td>Can't find config file</td><td>Press <kbd>WIN+R</kbd>, paste <code>%USERPROFILE%\.config\opencode</code></td></tr>
+      <tr><td>Can't find logs</td><td>Press <kbd>WIN+R</kbd>, paste <code>%USERPROFILE%\.local\share\opencode\log</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3><span class="os-badge mac">macOS</span></h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Problem</th><th>Solution</th></tr></thead>
+    <tbody>
+      <tr><td>App blocked by macOS</td><td>System Settings &rarr; Privacy &amp; Security &rarr; "Open Anyway"</td></tr>
+      <tr><td>Blank / frozen UI</td><td><code>OpenCode</code> menu &rarr; <strong>Reload Webview</strong></td></tr>
+      <tr><td>Can't find config file</td><td><code>~/.config/opencode/opencode.jsonc</code></td></tr>
+      <tr><td>Can't find logs</td><td><code>~/.local/share/opencode/log/</code></td></tr>
+      <tr><td>Orphan <code>opencode-cli</code> processes</td><td><code>pkill -9 -f opencode-cli</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3><span class="os-badge both">Both Platforms</span></h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Problem</th><th>Solution</th></tr></thead>
+    <tbody>
+      <tr><td><code>ProviderModelNotFoundError</code></td><td>Model IDs follow <code>provider/model</code> format. Run <code>opencode models</code> to list available models</td></tr>
+      <tr><td><code>ProviderInitError</code></td><td>Corrupted config. Delete <code>~/.local/share/opencode</code> (or <code>%USERPROFILE%\.local\share\opencode</code>) and re-authenticate via <code>/connect</code></td></tr>
+      <tr><td><code>AI_APICallError</code></td><td>Outdated provider packages. Clear cache at <code>~/.cache/opencode</code> (or <code>%USERPROFILE%\.cache\opencode</code>) and restart</td></tr>
+      <tr><td>Plugin install warnings</td><td>Harmless &mdash; <a href="#plugin-error">Section 5</a></td></tr>
+      <tr><td>Need to reset everything</td>
+        <td>
+          <ol style="margin:0;padding-left:16px">
+            <li>Delete config cache: <code>~/.cache/opencode</code> <span style="color:var(--text-muted)">(Win: <code>%USERPROFILE%\.cache\opencode</code>)</span></li>
+            <li>Delete data: <code>~/.local/share/opencode</code> <span style="color:var(--text-muted)">(Win: <code>%USERPROFILE%\.local\share\opencode</code>)</span></li>
+            <li>Delete desktop storage: <code>%APPDATA%\ai.opencode.desktop\*.dat</code> <span style="color:var(--text-muted)">(Mac: <code>~/Library/Application Support/ai.opencode.desktop/*.dat</code>)</span></li>
+            <li>Restart and reconfigure</li>
+          </ol>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ──────── 12 ──────── -->
+<section id="quickref">
+  <h2><span class="section-num">12</span> Quick Reference</h2>
+
+  <h3>Config File Template</h3>
+  <pre>{
+  <span class="string">"$schema"</span>: <span class="string">"https://opencode.ai/config.json"</span>,
+
+  <span class="comment">// Default model (use "opencode/&lt;model-id&gt;" for Zen models)</span>
+  <span class="string">"model"</span>: <span class="string">"opencode/big-pickle"</span>,
+
+  <span class="comment">// Log level for debugging</span>
+  <span class="string">"logLevel"</span>: <span class="string">"INFO"</span>,
+
+  <span class="comment">// Auto-update behavior</span>
+  <span class="string">"autoupdate"</span>: <span class="string">"notify"</span>
+}</pre>
+
+  <h3>Essential Commands</h3>
+  <div class="cmd-grid">
+    <span class="cmd">opencode</span><span class="desc">Start interactive TUI mode</span>
+    <span class="cmd">opencode run <span style="color:var(--text-muted)">"prompt"</span></span><span class="desc">Run a single prompt non-interactively</span>
+    <span class="cmd">/connect</span><span class="desc">Add a provider (Zen, Anthropic, OpenAI, etc.)</span>
+    <span class="cmd">/models</span><span class="desc">List and select available models</span>
+    <span class="cmd">/agent</span><span class="desc">Switch between agents (build, plan, explore)</span>
+    <span class="cmd">opencode models</span><span class="desc">List all models from CLI</span>
+    <span class="cmd">opencode models --refresh</span><span class="desc">Refresh the model cache</span>
+    <span class="cmd">opencode --log-level DEBUG</span><span class="desc">Start with verbose debugging</span>
+  </div>
+
+  <h3>Important File Paths</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>What</th><th>Windows</th><th>macOS</th></tr></thead>
+    <tbody>
+      <tr><td>Global config</td><td><code>%USERPROFILE%\.config\opencode\opencode.jsonc</code></td><td><code>~/.config/opencode/opencode.jsonc</code></td></tr>
+      <tr><td>Logs</td><td><code>%USERPROFILE%\.local\share\opencode\log\</code></td><td><code>~/.local/share/opencode/log/</code></td></tr>
+      <tr><td>Session data</td><td><code>%USERPROFILE%\.local\share\opencode\project\</code></td><td><code>~/.local/share/opencode/project/</code></td></tr>
+      <tr><td>Cache</td><td><code>%USERPROFILE%\.cache\opencode\</code></td><td><code>~/.cache/opencode/</code></td></tr>
+      <tr><td>Desktop storage</td><td><code>%APPDATA%\ai.opencode.desktop\</code></td><td><code>~/Library/Application Support/ai.opencode.desktop/</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- Resources -->
+<div class="resources">
+  <a href="https://opencode.ai/docs" target="_blank">&#x1F4D6; Official Docs</a>
+  <a href="https://opencode.ai/zen" target="_blank">&#x2728; Zen Models</a>
+  <a href="https://opencode.ai/download" target="_blank">&#x1F4E5; Download</a>
+  <a href="https://github.com/anomalyco/opencode" target="_blank">&#x1F5A5; GitHub</a>
+  <a href="https://opencode.ai/discord" target="_blank">&#x1F4AC; Discord</a>
+</div>
+
+<footer>
+  OpenCode Setup Guide &mdash; Built from real-world experience &middot; MIT License
+</footer>
+
+</main>
+</div>
+</body>
+</html>
